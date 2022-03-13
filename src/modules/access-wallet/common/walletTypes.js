@@ -11,6 +11,7 @@ const WALLET_TYPES = {
   PRIV_KEY: 'privKey',
   COOL_WALLET: 'coolWallet',
   WALLET_LINK: 'walletLink',
-  MEW_WALLET: 'mewWallet'
+  MEW_WALLET: 'mewWallet',
+  PROKEY: 'prokey'
 };
 export default WALLET_TYPES;

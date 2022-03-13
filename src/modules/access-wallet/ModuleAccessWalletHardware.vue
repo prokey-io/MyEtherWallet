@@ -137,6 +137,15 @@
       <div v-if="onTrezor">
         <access-wallet-trezor :trezor-unlock="trezorUnlock" :reset="reset" />
       </div>
+
+      <!--
+        =====================================================================================
+          Prokey
+        =====================================================================================
+        -->
+      <div v-if="onProkey">
+        <access-wallet-prokey :prokey-unlock="prokeyUnlock" :reset="reset" />
+      </div>
     </div>
     <!--
       =====================================================================================
@@ -165,6 +174,7 @@
 <script>
 import { Toast, ERROR } from '@/modules/toast/handler/handlerToast';
 import { isEmpty } from 'lodash';
+import AccessWalletProkey from './hardware/components/AccessWalletProkey.vue';
 import AccessWalletBitbox from './hardware/components/AccessWalletBitbox';
 import AccessWalletAddressNetwork from '@/modules/access-wallet/common/components/AccessWalletAddressNetwork';
 import AccessWalletKeepkey from './hardware/components/AccessWalletKeepkey';
@@ -188,7 +198,8 @@ export default {
     AccessWalletTrezor,
     AccessWalletLedger,
     AccessWalletAddressNetwork,
-    AccessWalletBitbox
+    AccessWalletBitbox,
+    AccessWalletProkey
   },
   filters: {
     concatAddress(val) {
@@ -241,6 +252,11 @@ export default {
           label: 'CoolWallet',
           icon: require('@/assets/images/icons/hardware-wallets/icon-coolwallet.svg'),
           type: WALLET_TYPES.COOL_WALLET
+        },
+        {
+          label: 'Prokey',
+          icon: require('@/assets/images/icons/hardware-wallets/icon-prokey.svg'),
+          type: WALLET_TYPES.PROKEY
         }
       ],
       ledgerApps: appPaths.map(item => {
@@ -361,6 +377,12 @@ export default {
      */
     onTrezor() {
       return this.walletType === WALLET_TYPES.TREZOR;
+    },
+    /**
+     * On Prokey
+     */
+    onProkey() {
+      return this.walletType === WALLET_TYPES.PROKEY;
     },
     /**
      * On Password step
@@ -543,6 +565,10 @@ export default {
       this.step = 2;
       this.walletType = WALLET_TYPES.TREZOR;
     },
+    prokeyClose() {
+      this.step = 2;
+      this.walletType = WALLET_TYPES.PROKEY;
+    },
     setWalletInstance(str) {
       this.walletType = str;
       this.nextStep();
@@ -575,6 +601,9 @@ export default {
     coolWalletUnlock() {
       this.unlockPathAndPassword(null, this.password);
     },
+    prokeyUnlock() {
+      this.unlockPathOnly();
+    },
     /**
      * Unlock only the path step
      */
@@ -582,13 +611,17 @@ export default {
       const path = this.selectedPath.hasOwnProperty('value')
         ? this.selectedPath.value
         : this.selectedPath;
+      console.log('path:', path);
       this.wallets[this.walletType]
         .create(path)
         .then(_hwWallet => {
           try {
             this.loaded = true;
             if (this.onLedger) this.ledgerConnected = true;
-            if ((this.onTrezor || this.onKeepkey) && this.step == 2)
+            if (
+              (this.onTrezor || this.onKeepkey || this.onProkey) &&
+              this.step == 2
+            )
               this.step++;
             if (this.onBitbox2) {
               this.hwWalletInstance = _hwWallet;
@@ -618,6 +651,7 @@ export default {
             Toast(err, {}, ERROR);
           }
           this.onTrezor ? this.trezorClose : this.reset();
+          this.onProkey ? this.prokeyClose : this.reset();
         });
     },
     /**

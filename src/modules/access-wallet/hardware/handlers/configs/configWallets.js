@@ -5,7 +5,8 @@ import {
   TrezorWallet,
   BitBox02Wallet,
   KeepkeyWallet,
-  CoolWallet
+  CoolWallet,
+  ProkeyWallet
 } from '@/modules/access-wallet/common';
 
 /**
@@ -53,5 +54,12 @@ export default {
     hasPaths: false,
     requiresPassword: true,
     title: 'Enter pairing password'
+  },
+  [WALLET_TYPES.PROKEY]: {
+    create: ProkeyWallet,
+    when: 2,
+    hasPaths: false,
+    requiresPassword: false,
+    title: 'Connect your Prokey'
   }
 };
