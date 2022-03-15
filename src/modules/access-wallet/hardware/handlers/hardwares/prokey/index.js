@@ -1,6 +1,6 @@
 import Trezor from 'trezor-connect';
 import WALLET_TYPES from '@/modules/access-wallet/common/walletTypes';
-// import bip44Paths from '@/modules/access-wallet/hardware/handlers/bip44';
+import bip44Paths from '@/modules/access-wallet/hardware/handlers/bip44';
 import HDWalletInterface from '@/modules/access-wallet/common/HDWalletInterface';
 import * as HDKey from 'hdkey';
 import { Transaction, FeeMarketEIP1559Transaction } from '@ethereumjs/tx';
@@ -17,15 +17,15 @@ import store from '@/core/store';
 import commonGenerator from '@/core/helpers/commonGenerator';
 import Vue from 'vue';
 import prokey from '@/assets/images/icons/wallets/prokey.png';
+import { RequestType, openProkeyLink } from './utils';
 const NEED_PASSWORD = false;
 
 class ProkeyWallet {
   constructor() {
-    this.popup = null;
     this.identifier = WALLET_TYPES.PROKEY;
     this.isHardware = true;
     this.needPassword = NEED_PASSWORD;
-    // this.supportedPaths = bip44Paths[WALLET_TYPES.TREZOR];
+    this.supportedPaths = bip44Paths[WALLET_TYPES.PROKEY];
     this.model = '';
     this.meta = {
       name: 'Prokey',
@@ -36,28 +36,12 @@ class ProkeyWallet {
     };
   }
 
-  openProkeyLink() {
-    this.popup = window.open('http://localhost:4200/');
-    window.addEventListener(
-      'message',
-      event => {
-        alert(event.data);
-      },
-      false
-    );
-  }
-
-  async init() {
-    // this.basePath = this.supportedPaths[0].path;
-    // this.openProkeyLink();
-    // const rootPub = await getRootPubKey(this.basePath);
-    const xpub =
-      'xpub6FwxoKkrViXu5cuesBeLyUqxGzvfBZE1HhawJC7wNdBDpmwKBNfPMTYcnxe21jSP22gp3WPmZwU' +
-      'awgHmZKUi4JxJhGT6sLfB6crGnAwQ9WP';
+  async init(basePath) {
+    this.basePath = basePath ? basePath : this.supportedPaths[0].path;
+    const { xpub } = await openProkeyLink(this.basePath, RequestType.XPUB);
     this.hdKey = HDKey.fromExtendedKey(xpub);
   }
   getAccount(idx) {
-    console.log(idx);
     const derivedKey = this.hdKey.derive('m/' + idx);
     const txSigner = async tx => {
       const _tx = new Transaction(tx, {
@@ -127,11 +111,11 @@ class ProkeyWallet {
       return getBufferFromHex(result.payload.signature);
     };
     const displayAddress = async () => {
-      // await Trezor.ethereumGetAddress({
-      //   path: this.basePath + '/' + idx,
-      //   showOnTrezor: true
-      // });
-      return '123';
+      const { address } = await openProkeyLink({
+        param: this.basePath,
+        type: RequestType.ADDRESS
+      });
+      return address;
     };
     return new HDWalletInterface(
       this.basePath + '/' + idx,
@@ -148,9 +132,9 @@ class ProkeyWallet {
   getCurrentPath() {
     return this.basePath;
   }
-  // getSupportedPaths() {
-  //   return this.supportedPaths;
-  // }
+  getSupportedPaths() {
+    return this.supportedPaths;
+  }
 }
 const createWallet = async basePath => {
   const _prokeyWallet = new ProkeyWallet();
@@ -158,16 +142,5 @@ const createWallet = async basePath => {
   return _prokeyWallet;
 };
 createWallet.errorHandler = errorHandler;
-// const getRootPubKey = async _path => {
-//   const result = await Trezor.ethereumGetPublicKey({ path: _path });
-//   if (!result.payload) {
-//     throw new Error('popup failed to open');
-//   }
-//   if (!result.success) throw new Error(result.payload.error);
-//   return {
-//     publicKey: result.payload.publicKey,
-//     chainCode: result.payload.chainCode
-//   };
-// };
 
 export default createWallet;

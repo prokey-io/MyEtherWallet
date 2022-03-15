@@ -58,7 +58,7 @@ export default {
   [WALLET_TYPES.PROKEY]: {
     create: ProkeyWallet,
     when: 2,
-    hasPaths: false,
+    hasPaths: true,
     requiresPassword: false,
     title: 'Connect your Prokey'
   }
