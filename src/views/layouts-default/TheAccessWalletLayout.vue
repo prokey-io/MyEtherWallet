@@ -169,7 +169,7 @@ export default {
         {
           color: 'white',
           title: 'Hardware Wallets',
-          subtitle: 'Ledger, Trezor, KeepKey, FINNEY, BitBox',
+          subtitle: 'Ledger, Trezor, KeepKey, FINNEY, BitBox, Prokey',
           note: '',
           rightIcon: require('@/assets/images/icons/icon-hardware-wallet.png'),
           titleIcon: 'mdi-shield-check',

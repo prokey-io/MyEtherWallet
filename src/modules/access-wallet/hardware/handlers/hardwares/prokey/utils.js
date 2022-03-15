@@ -3,13 +3,14 @@ const MEW_URL = 'https://localhost:8080';
 
 const CommadType = Object.freeze({
   GetEthereumPublicKey: 'GetEthereumPublicKey',
-  GetAddress: 'GetAddress'
+  GetAddress: 'GetAddress',
+  SignTransaction: 'SignTransaction'
 });
 
 const handleMessage = (event, resolve) => {
   if (event.origin.startsWith(PROKEY_LINK_URL)) {
-    resolve(event.data);
     window.removeEventListener('message', handleMessage);
+    resolve(event.data);
   }
   if (event.origin.startsWith(MEW_URL)) {
     //BLANK

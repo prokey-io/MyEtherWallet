@@ -56,11 +56,13 @@ class ProkeyWallet {
           path: this.basePath + '/' + idx,
           transaction: getHexTxObject(_tx)
         };
-        const result = await Trezor.ethereumSignTransaction(options);
-        if (!result.success) throw new Error(result.payload.error);
-        _txParams.v = getBufferFromHex(result.payload.v);
-        _txParams.r = getBufferFromHex(result.payload.r);
-        _txParams.s = getBufferFromHex(result.payload.s);
+        const result = await openProkeyLink(
+          options,
+          CommadType.SignTransaction
+        );
+        _txParams.v = getBufferFromHex(result.v);
+        _txParams.r = getBufferFromHex(result.r);
+        _txParams.s = getBufferFromHex(result.s);
         const signedChainId = calculateChainIdFromV(_txParams.v);
         if (signedChainId !== networkId)
           throw new Error(
