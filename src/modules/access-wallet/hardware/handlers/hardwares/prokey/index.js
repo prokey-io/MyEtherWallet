@@ -17,7 +17,7 @@ import store from '@/core/store';
 import commonGenerator from '@/core/helpers/commonGenerator';
 import Vue from 'vue';
 import prokey from '@/assets/images/icons/wallets/prokey.png';
-import { RequestType, openProkeyLink } from './utils';
+import { CommadType, openProkeyLink } from './utils';
 const NEED_PASSWORD = false;
 
 class ProkeyWallet {
@@ -38,7 +38,10 @@ class ProkeyWallet {
 
   async init(basePath) {
     this.basePath = basePath ? basePath : this.supportedPaths[0].path;
-    const { xpub } = await openProkeyLink(this.basePath, RequestType.XPUB);
+    const { xpub } = await openProkeyLink(
+      this.basePath,
+      CommadType.GetEthereumPublicKey
+    );
     this.hdKey = HDKey.fromExtendedKey(xpub);
   }
   getAccount(idx) {
@@ -113,7 +116,7 @@ class ProkeyWallet {
     const displayAddress = async () => {
       const { address } = await openProkeyLink({
         param: this.basePath,
-        type: RequestType.ADDRESS
+        type: CommadType.GetAddress
       });
       return address;
     };

@@ -1,9 +1,9 @@
 const PROKEY_LINK_URL = 'http://localhost:4200';
 const MEW_URL = 'https://localhost:8080';
 
-const RequestType = Object.freeze({
-  XPUB: 'xpub',
-  ADDRESS: 'address'
+const CommadType = Object.freeze({
+  GetEthereumPublicKey: 'GetEthereumPublicKey',
+  GetAddress: 'GetAddress'
 });
 
 const handleMessage = (event, resolve) => {
@@ -29,4 +29,4 @@ const openProkeyLink = (param, type) =>
     );
   });
 
-export { RequestType, openProkeyLink };
+export { CommadType, openProkeyLink };
