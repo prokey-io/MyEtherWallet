@@ -4,7 +4,8 @@ const MEW_URL = 'https://localhost:8080';
 const CommadType = Object.freeze({
   GetEthereumPublicKey: 'GetEthereumPublicKey',
   GetAddress: 'GetAddress',
-  SignTransaction: 'SignTransaction'
+  SignTransaction: 'SignTransaction',
+  SignMessage: 'SignMessage'
 });
 
 const handleMessage = (event, resolve) => {

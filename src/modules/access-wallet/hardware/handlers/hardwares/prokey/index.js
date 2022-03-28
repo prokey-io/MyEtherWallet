@@ -39,9 +39,10 @@ class ProkeyWallet {
   async init(basePath) {
     this.basePath = basePath ? basePath : this.supportedPaths[0].path;
     const { xpub } = await openProkeyLink(
-      this.basePath,
+      { path: this.basePath },
       CommadType.GetEthereumPublicKey
     );
+    console.log(xpub);
     this.hdKey = HDKey.fromExtendedKey(xpub);
   }
   getAccount(idx) {
@@ -107,19 +108,19 @@ class ProkeyWallet {
       }
     };
     const msgSigner = async msg => {
-      const result = await Trezor.ethereumSignMessage({
-        path: this.basePath + '/' + idx,
-        message: toBuffer(msg).toString('hex'),
-        hex: true
-      });
-      if (!result.success) throw new Error(result.payload.error);
-      return getBufferFromHex(result.payload.signature);
+      const params = {
+        path: this.basePath,
+        message: toBuffer(msg).toString()
+      };
+      console.log(params);
+      const result = await openProkeyLink(params, CommadType.SignMessage);
+      return getBufferFromHex(result.signature);
     };
     const displayAddress = async () => {
-      const { address } = await openProkeyLink({
-        param: this.basePath,
-        type: CommadType.GetAddress
-      });
+      const { address } = await openProkeyLink(
+        { path: this.basePath },
+        CommadType.GetAddress
+      );
       return address;
     };
     return new HDWalletInterface(
