@@ -1,4 +1,3 @@
-import Trezor from 'trezor-connect';
 import WALLET_TYPES from '@/modules/access-wallet/common/walletTypes';
 import bip44Paths from '@/modules/access-wallet/hardware/handlers/bip44';
 import HDWalletInterface from '@/modules/access-wallet/common/HDWalletInterface';
@@ -17,7 +16,7 @@ import store from '@/core/store';
 import commonGenerator from '@/core/helpers/commonGenerator';
 import Vue from 'vue';
 import prokey from '@/assets/images/icons/wallets/prokey.png';
-import { CommadType, openProkeyLink } from './utils';
+import { CommandType, openProkeyLink } from './utils';
 const NEED_PASSWORD = false;
 
 class ProkeyWallet {
@@ -40,7 +39,7 @@ class ProkeyWallet {
     this.basePath = basePath ? basePath : this.supportedPaths[0].path;
     const { xpub } = await openProkeyLink(
       { path: this.basePath },
-      CommadType.GetEthereumPublicKey
+      CommandType.GetEthereumPublicKey
     );
     console.log(xpub);
     this.hdKey = HDKey.fromExtendedKey(xpub);
@@ -59,7 +58,7 @@ class ProkeyWallet {
         };
         const result = await openProkeyLink(
           options,
-          CommadType.SignTransaction
+          CommandType.SignTransaction
         );
         _txParams.v = getBufferFromHex(result.v);
         _txParams.r = getBufferFromHex(result.r);
@@ -75,10 +74,8 @@ class ProkeyWallet {
           );
         return getSignTransactionObject(Transaction.fromTxData(_txParams));
       };
-      if (
-        store.getters['global/isEIP1559SupportedNetwork'] &&
-        this.model === 'T'
-      ) {
+      console.log(store.getters['global/isEIP1559SupportedNetwork']);
+      if (store.getters['global/isEIP1559SupportedNetwork']) {
         const feeMarket = store.getters['global/gasFeeMarketInfo'];
         const txParams = getHexTxObject(_tx);
         Object.assign(txParams, eip1559Params(txParams.gasPrice, feeMarket));
@@ -88,12 +85,13 @@ class ProkeyWallet {
             path: this.basePath + '/' + idx,
             transaction: txParams
           };
-
-          const result = await Trezor.ethereumSignTransaction(options);
-          if (!result.success) throw new Error(result.payload.error);
-          txParams.v = getBufferFromHex(result.payload.v);
-          txParams.r = getBufferFromHex(result.payload.r);
-          txParams.s = getBufferFromHex(result.payload.s);
+          const result = await openProkeyLink(
+            options,
+            CommandType.SignTransaction
+          );
+          txParams.v = getBufferFromHex(result.v);
+          txParams.r = getBufferFromHex(result.r);
+          txParams.s = getBufferFromHex(result.s);
           return getSignTransactionObject(
             FeeMarketEIP1559Transaction.fromTxData(txParams)
           );
@@ -112,14 +110,13 @@ class ProkeyWallet {
         path: this.basePath,
         message: toBuffer(msg).toString()
       };
-      console.log(params);
-      const result = await openProkeyLink(params, CommadType.SignMessage);
+      const result = await openProkeyLink(params, CommandType.SignMessage);
       return getBufferFromHex(result.signature);
     };
     const displayAddress = async () => {
       const { address } = await openProkeyLink(
         { path: this.basePath },
-        CommadType.GetAddress
+        CommandType.GetAddress
       );
       return address;
     };
