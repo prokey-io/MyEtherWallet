@@ -159,6 +159,10 @@ const binanceChain = {
   path: "m/44'/714'",
   label: 'Binance Chain'
 };
+const rinkeby = {
+  path: "m/44'/1'/0'/0",
+  label: 'Rinkeby'
+};
 export {
   ethereum,
   ethereumClassic,
@@ -199,5 +203,6 @@ export {
   lightstreamsNetwork,
   mintmeComCoin,
   ethercore,
-  binanceChain
+  binanceChain,
+  rinkeby
 };

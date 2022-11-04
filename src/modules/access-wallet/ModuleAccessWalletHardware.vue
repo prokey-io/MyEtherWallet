@@ -194,6 +194,15 @@
         <access-wallet-trezor :trezor-unlock="trezorUnlock" :reset="reset" />
       </div>
     </div>
+
+    <!--
+        =====================================================================================
+          Prokey
+        =====================================================================================
+        -->
+    <div v-if="onProkey">
+      <access-wallet-prokey :prokey-unlock="prokeyUnlock" :reset="reset" />
+    </div>
     <!--
       =====================================================================================
         Step 3: Select Address and Network | (If Applicable)
@@ -243,6 +252,8 @@ export default {
       import('./hardware/components/AccessWalletCoolWallet'),
     AccessWalletTrezor: () =>
       import('./hardware/components/AccessWalletTrezor.vue'),
+    AccessWalletProkey: () =>
+      import('./hardware/components/AccessWalletProkey.vue'),
     AccessWalletLedger: () =>
       import('./hardware/components/AccessWalletLedger.vue'),
     AccessWalletLedgerX: () =>
@@ -304,6 +315,11 @@ export default {
         icon: require('@/assets/images/icons/hardware-wallets/icon-coolwallet.svg'),
         type: WALLET_TYPES.COOL_WALLET,
         bluetooth: true
+      },
+      {
+        label: 'Prokey',
+        icon: require('@/assets/images/icons/hardware-wallets/icon-prokey.svg'),
+        type: WALLET_TYPES.PROKEY
       }
     ],
     enableBluetooth: [
@@ -483,6 +499,12 @@ export default {
      */
     onTrezor() {
       return this.walletType === WALLET_TYPES.TREZOR;
+    },
+    /**
+     * On Prokey
+     */
+    onProkey() {
+      return this.walletType === WALLET_TYPES.PROKEY;
     },
     /**
      * On Password step
@@ -690,6 +712,10 @@ export default {
       this.step = 2;
       this.walletType = WALLET_TYPES.TREZOR;
     },
+    prokeyClose() {
+      this.step = 2;
+      this.walletType = WALLET_TYPES.PROKEY;
+    },
     setWalletInstance(btnObj) {
       this.walletType = btnObj.type;
       this.nextStep();
@@ -723,6 +749,9 @@ export default {
     trezorUnlock() {
       this.unlockPathOnly();
     },
+    prokeyUnlock() {
+      this.unlockPathOnly();
+    },
     bitbox02Unlock() {
       this.unlockPathOnly();
     },
@@ -747,7 +776,10 @@ export default {
           try {
             this.loaded = true;
             if (this.onLedgerX || this.onLedger) this.nextStep();
-            if ((this.onTrezor || this.onKeepkey) && this.step === 2)
+            if (
+              (this.onTrezor || this.onKeepkey || this.onProkey) &&
+              this.step === 2
+            )
               this.step++;
             if (this.onBitbox2) {
               this.hwWalletInstance = _hwWallet;
@@ -783,6 +815,7 @@ export default {
             Toast(err, {}, ERROR);
           }
           this.onTrezor ? this.trezorClose : this.reset();
+          this.onProkey ? this.prokeyClose : this.reset();
         });
     },
     /**

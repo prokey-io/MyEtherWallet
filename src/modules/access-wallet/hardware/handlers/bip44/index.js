@@ -5,10 +5,12 @@ import bitbox02Paths from './bitbox02Paths';
 import keepkeyPaths from './keepkeyPaths';
 import mnemonicPaths from './mnemonicPaths';
 import coolWalletPaths from './coolWalletPaths';
+import prokeyPaths from './prokeyPaths';
 
 export default {
   [WALLET_TYPES.LEDGER]: ledgerPaths,
   [WALLET_TYPES.TREZOR]: trezorPaths,
+  [WALLET_TYPES.PROKEY]: prokeyPaths,
   [WALLET_TYPES.BITBOX2]: bitbox02Paths,
   [WALLET_TYPES.KEEPKEY]: keepkeyPaths,
   [WALLET_TYPES.MNEMONIC]: mnemonicPaths,

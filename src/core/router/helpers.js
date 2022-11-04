@@ -73,7 +73,8 @@ const accessRouteGuard = (to, from, next) => {
         'keepkey',
         'coolwallet',
         'bitbox02',
-        'trezor'
+        'trezor',
+        'prokey'
       ];
       if (validTypes.includes(to.query.type)) {
         next();

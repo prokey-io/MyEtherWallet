@@ -257,7 +257,7 @@ export default {
           {
             color: 'white',
             title: 'Hardware wallets',
-            subtitle: 'Ledger, Trezor, KeepKey, Cool Wallet, Bitbox02',
+            subtitle: 'Ledger, Trezor, KeepKey, Cool Wallet, Bitbox02, Prokey',
             official: false,
             recommended: true,
             icon: require('@/assets/images/icons/icon-hardware-wallet.png'),
