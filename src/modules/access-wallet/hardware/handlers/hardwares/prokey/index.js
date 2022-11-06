@@ -15,7 +15,7 @@ import errorHandler from './errorHandler';
 import store from '@/core/store';
 import commonGenerator from '@/core/helpers/commonGenerator';
 import Vue from 'vue';
-import prokey from '@/assets/images/icons/wallets/prokey.png';
+import prokey from '@/assets/images/icons/wallets/prokey.svg';
 import { CommandType, openProkeyLink } from './utils';
 const NEED_PASSWORD = false;
 
@@ -95,7 +95,6 @@ class ProkeyWallet {
             FeeMarketEIP1559Transaction.fromTxData(txParams)
           );
         } catch (e) {
-          //unsupported trezor version
           if (e.message === 'Parameter "gasPrice" is missing.')
             return legacySigner(tx);
           throw e;

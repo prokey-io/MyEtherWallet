@@ -193,16 +193,17 @@
       <div v-if="onTrezor">
         <access-wallet-trezor :trezor-unlock="trezorUnlock" :reset="reset" />
       </div>
-    </div>
 
-    <!--
+      <!--
         =====================================================================================
           Prokey
         =====================================================================================
         -->
-    <div v-if="onProkey">
-      <access-wallet-prokey :prokey-unlock="prokeyUnlock" :reset="reset" />
+      <div v-if="onProkey">
+        <access-wallet-prokey :prokey-unlock="prokeyUnlock" :reset="reset" />
+      </div>
     </div>
+
     <!--
       =====================================================================================
         Step 3: Select Address and Network | (If Applicable)
